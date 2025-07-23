@@ -1,23 +1,44 @@
 import "./style.css";
-import typescriptLogo from "./typescript.svg";
-import viteLogo from "/vite.svg";
-import init, { greet } from "../pkg/snake_game_with_rust_wasm";
+import init, { Jungle } from "../pkg/snake_game_with_rust_wasm";
 
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Snake Game With Rust &amp; WebAssembly</h1>
+    <h1>Snake Game</h1>
+    <canvas id="jungle-canvas"></canvas>
   </div>
 `;
 
+const CELL_SIZE = 20;
+
 async function start() {
   await init();
-  greet("Minh");
+
+  const jungle = new Jungle();
+  const jungleWidth = jungle.width;
+
+  const canvas = document.getElementById("jungle-canvas") as HTMLCanvasElement;
+  const ctx = canvas.getContext("2d")!;
+
+  canvas.width = jungleWidth * CELL_SIZE;
+  canvas.height = jungleWidth * CELL_SIZE;
+
+  drawGrid(ctx, jungleWidth);
+}
+
+function drawGrid(ctx: CanvasRenderingContext2D, width: number) {
+  ctx.beginPath();
+
+  for (let x = 0; x <= width; x++) {
+    ctx.moveTo(x * CELL_SIZE, 0);
+    ctx.lineTo(x * CELL_SIZE, width * CELL_SIZE);
+  }
+
+  for (let y = 0; y <= width; y++) {
+    ctx.moveTo(0, y * CELL_SIZE);
+    ctx.lineTo(width * CELL_SIZE, y * CELL_SIZE);
+  }
+
+  ctx.stroke();
 }
 
 start().catch(console.error);
