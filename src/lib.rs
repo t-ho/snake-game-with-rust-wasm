@@ -175,38 +175,43 @@ impl Jungle {
 
     fn gen_next_snake_cell(&self, direction: &Direction) -> SnakeCell {
         let snake_head = self.snake_head_idx();
-        let row = snake_head / self.width;
 
         match direction {
             Direction::Up => {
-                let threshold = snake_head - row * self.width;
-                if snake_head == threshold {
-                    SnakeCell(self.size - self.width + threshold)
+                if snake_head < self.width {
+                    // Top row - wrap to bottom
+                    SnakeCell(self.size - self.width + snake_head)
                 } else {
                     SnakeCell(snake_head - self.width)
                 }
             }
             Direction::Down => {
-                let threshold = snake_head + ((self.width - row) * self.width);
-                if snake_head + self.width == threshold {
-                    SnakeCell(threshold - ((row + 1) * self.width))
+                let next_pos = snake_head + self.width;
+                if next_pos >= self.size {
+                    // Bottom row - wrap to top
+                    SnakeCell(snake_head + self.width - self.size)
                 } else {
-                    SnakeCell(snake_head + self.width)
+                    SnakeCell(next_pos)
                 }
             }
-
             Direction::Left => {
-                let threshold = row * self.width;
-                if snake_head == threshold {
-                    SnakeCell(threshold + (self.width - 1))
+                // Calculate row start using division, then check if we're at row start
+                let row = snake_head / self.width;
+                let row_start = row * self.width;
+                if snake_head == row_start {
+                    // Left edge - wrap to right end of same row
+                    SnakeCell(row_start + self.width - 1)
                 } else {
                     SnakeCell(snake_head - 1)
                 }
             }
             Direction::Right => {
-                let threshold = (row + 1) * self.width;
-                if snake_head + 1 >= threshold {
-                    SnakeCell(threshold - self.width)
+                // Calculate row start using division, then check if we're at row end
+                let row = snake_head / self.width;
+                let row_start = row * self.width;
+                if snake_head == row_start + self.width - 1 {
+                    // Right edge - wrap to left start of same row
+                    SnakeCell(row_start)
                 } else {
                     SnakeCell(snake_head + 1)
                 }
