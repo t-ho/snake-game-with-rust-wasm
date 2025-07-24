@@ -28,7 +28,7 @@ export const createGameTemplate = (): string => `
               <path d="m15 18-6-6 6-6"/>
             </svg>
           </button>
-          <span id="speed-display" class="speed-display">Speed: 1x</span>
+          <span id="speed-display" class="speed-display">Speed: 2x</span>
           <button id="speed-up" class="btn btn-outline btn-sm">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
               <path d="m9 18 6-6-6-6"/>

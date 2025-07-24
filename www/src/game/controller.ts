@@ -11,7 +11,7 @@ import { ICONS } from "../ui/icons";
 export class GameController {
   private gameRunning = false;
   private animationId = 0;
-  private gameSpeed = 1;
+  private gameSpeed = 2;
   private game: Game;
   private elements: GameElements;
   private renderer: GameRenderer;
