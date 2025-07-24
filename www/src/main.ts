@@ -13,6 +13,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
     <div class="game-controls">
       <div id="game-status">Press Play to Start</div>
+      <div id="game-points">Points: 0</div>
       <button id="play-button">Play</button>
     </div>
 
@@ -27,7 +28,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 `;
 
 const CELL_SIZE = 20;
-const JUNGLE_WIDTH = 8;
+const JUNGLE_WIDTH = 20;
 
 let gameRunning = false;
 let animationId: number;
@@ -46,12 +47,17 @@ async function start() {
   const statusElement = document.getElementById(
     "game-status",
   ) as HTMLDivElement;
+  const pointsElement = document.getElementById(
+    "game-points",
+  ) as HTMLDivElement;
   const playButton = document.getElementById(
     "play-button",
   ) as HTMLButtonElement;
 
   function updateStatus() {
     const status = game.status();
+    pointsElement.textContent = `Points: ${game.points()}`;
+
     switch (status) {
       case GameStatus.Playing:
         statusElement.textContent = "Playing - Use arrow keys to move";
