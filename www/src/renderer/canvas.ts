@@ -58,21 +58,23 @@ export class GameRenderer {
     const { CELL_SIZE } = GAME_CONFIG;
     const direction = game.snake_direction();
 
-    snakeCells.forEach((cellIdx, i) => {
+    // Draw from tail to head to ensure head is always on top
+    for (let i = snakeCells.length - 1; i >= 0; i--) {
+      const cellIdx = snakeCells[i];
       const col = cellIdx % jungleWidth;
       const row = Math.floor(cellIdx / jungleWidth);
       const x = col * CELL_SIZE;
       const y = row * CELL_SIZE;
 
       if (i === 0) {
-        // 🐍 Draw directional snake head
+        // 🐍 Draw directional snake head (last, so it's on top)
         this.drawSnakeHead(x, y, direction);
       } else {
         // 🟩 Draw body cell
         this.ctx.fillStyle = COLORS.SNAKE_BODY;
         this.ctx.fillRect(x + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2);
       }
-    });
+    }
   }
 
   private drawSnakeHead(x: number, y: number, direction: Direction): void {
