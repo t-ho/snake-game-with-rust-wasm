@@ -1,5 +1,14 @@
+export const getResponsiveCellSize = (): number => {
+  if (typeof window !== "undefined") {
+    return window.innerWidth <= 768 ? 15 : 20;
+  }
+  return 20;
+};
+
 export const GAME_CONFIG = {
-  CELL_SIZE: 20,
+  get CELL_SIZE() {
+    return getResponsiveCellSize();
+  },
   JUNGLE_WIDTH: 20,
   BASE_FPS: 4,
   MIN_SPEED: 1,
@@ -13,4 +22,3 @@ export const COLORS = {
   SNAKE_BODY: "#81c784",
   FOOD: "#ff5722",
 } as const;
-

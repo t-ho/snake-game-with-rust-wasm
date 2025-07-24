@@ -8,6 +8,10 @@ import { GameRenderer } from "./renderer/canvas";
 import { GameController } from "./game/controller";
 
 class SnakeGameApp {
+  private renderer: GameRenderer | null = null;
+  private canvas: HTMLCanvasElement | null = null;
+  private game: Game | null = null;
+
   private async init(): Promise<void> {
     // Initialize WASM
     const wasm = await init();
@@ -17,6 +21,7 @@ class SnakeGameApp {
 
     // Get UI elements
     const elements = getGameElements();
+    this.canvas = elements.canvas;
 
     // Setup canvas
     this.setupCanvas(elements.canvas);
@@ -25,13 +30,16 @@ class SnakeGameApp {
     const snakeSpawnIdx = rnd(
       GAME_CONFIG.JUNGLE_WIDTH * GAME_CONFIG.JUNGLE_WIDTH,
     );
-    const game = Game.new(GAME_CONFIG.JUNGLE_WIDTH, snakeSpawnIdx);
+    this.game = Game.new(GAME_CONFIG.JUNGLE_WIDTH, snakeSpawnIdx);
 
     // Create renderer
-    const renderer = new GameRenderer(elements.ctx, wasm);
+    this.renderer = new GameRenderer(elements.ctx, wasm);
 
     // Create controller
-    const controller = new GameController(game, elements, renderer);
+    const controller = new GameController(this.game, elements, this.renderer);
+
+    // Setup resize handler
+    this.setupResizeHandler();
 
     // Initial render
     controller.initialRender();
@@ -46,6 +54,23 @@ class SnakeGameApp {
     const { CELL_SIZE, JUNGLE_WIDTH } = GAME_CONFIG;
     canvas.width = JUNGLE_WIDTH * CELL_SIZE;
     canvas.height = JUNGLE_WIDTH * CELL_SIZE;
+  }
+
+  private setupResizeHandler(): void {
+    let resizeTimeout: number | undefined;
+
+    window.addEventListener("resize", () => {
+      if (resizeTimeout) {
+        clearTimeout(resizeTimeout);
+      }
+      resizeTimeout = setTimeout(() => {
+        if (this.canvas && this.renderer && this.game) {
+          this.setupCanvas(this.canvas);
+          // Re-render the game after canvas resize
+          this.renderer.render(this.game);
+        }
+      }, 250);
+    });
   }
 
   public async start(): Promise<void> {

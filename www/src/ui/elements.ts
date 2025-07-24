@@ -3,6 +3,7 @@ export interface GameElements {
   ctx: CanvasRenderingContext2D;
   statusElement: HTMLDivElement;
   pointsElement: HTMLDivElement;
+  highScoreElement: HTMLDivElement;
   playButton: HTMLButtonElement;
   speedUpButton: HTMLButtonElement;
   speedDownButton: HTMLButtonElement;
@@ -18,10 +19,10 @@ export const getGameElements = (): GameElements => {
     ctx,
     statusElement: document.getElementById("game-status") as HTMLDivElement,
     pointsElement: document.getElementById("game-points") as HTMLDivElement,
+    highScoreElement: document.getElementById("high-score") as HTMLDivElement,
     playButton: document.getElementById("play-button") as HTMLButtonElement,
     speedUpButton: document.getElementById("speed-up") as HTMLButtonElement,
     speedDownButton: document.getElementById("speed-down") as HTMLButtonElement,
     speedDisplay: document.getElementById("speed-display") as HTMLSpanElement,
   };
 };
-

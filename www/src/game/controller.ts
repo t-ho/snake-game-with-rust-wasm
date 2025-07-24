@@ -7,6 +7,7 @@ import type { GameElements } from "../ui/elements";
 import type { GameRenderer } from "../renderer/canvas";
 import { GAME_CONFIG } from "../config/constants";
 import { ICONS } from "../ui/icons";
+import { GameStorage } from "../utils/storage";
 
 export class GameController {
   private gameRunning = false;
@@ -153,6 +154,7 @@ export class GameController {
   private updateUI(): void {
     this.updateStatus();
     this.updatePoints();
+    this.updateHighScore();
     this.updateSpeedDisplay();
   }
 
@@ -171,19 +173,21 @@ export class GameController {
         this.setButtonDisabled(false);
         break;
       case GameStatus.Won:
+        this.handleGameEnd();
         this.elements.statusElement.textContent = "You Won! 🎉";
         this.elements.playButton.innerHTML = `${ICONS.play} Play Again`;
         this.setButtonDisabled(false);
         this.gameRunning = false;
         break;
       case GameStatus.Lost:
+        this.handleGameEnd();
         this.elements.statusElement.textContent = "Game Over 💀";
         this.elements.playButton.innerHTML = `${ICONS.play} Play Again`;
         this.setButtonDisabled(false);
         this.gameRunning = false;
         break;
       default:
-        this.elements.statusElement.textContent = "Press Play to Start";
+        this.elements.statusElement.textContent = "Ready";
         this.elements.playButton.innerHTML = `${ICONS.play} Play`;
         this.setButtonDisabled(false);
         break;
@@ -192,6 +196,16 @@ export class GameController {
 
   private updatePoints(): void {
     this.elements.pointsElement.textContent = `${this.game.points()}`;
+  }
+
+  private updateHighScore(): void {
+    const highScore = GameStorage.getHighScore();
+    this.elements.highScoreElement.textContent = `${highScore}`;
+  }
+
+  private handleGameEnd(): void {
+    const currentScore = this.game.points();
+    GameStorage.recordGameEnd(currentScore);
   }
 
   private updateSpeedDisplay(): void {
