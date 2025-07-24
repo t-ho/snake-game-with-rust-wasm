@@ -1,6 +1,6 @@
 import "./style.css";
 import init, {
-  Jungle,
+  Game,
   Direction,
   GameStatus,
 } from "../pkg/snake_game_with_rust_wasm";
@@ -10,16 +10,16 @@ import { rnd } from "./utils/rnd";
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <div class="game-container">
     <h1 class="game-title">Snake Game</h1>
-    
+
     <div class="game-controls">
       <div id="game-status">Press Play to Start</div>
       <button id="play-button">Play</button>
     </div>
-    
+
     <div class="game-canvas-container">
       <canvas id="jungle-canvas"></canvas>
     </div>
-    
+
     <div class="game-instructions">
       Use arrow keys to move the snake
     </div>
@@ -35,7 +35,7 @@ let animationId: number;
 async function start() {
   const wasm = await init();
   const snakeSpawnIdx = rnd(JUNGLE_WIDTH * JUNGLE_WIDTH);
-  const jungle = Jungle.new(JUNGLE_WIDTH, snakeSpawnIdx);
+  const game = Game.new(JUNGLE_WIDTH, snakeSpawnIdx);
 
   const canvas = document.getElementById("jungle-canvas") as HTMLCanvasElement;
   const ctx = canvas.getContext("2d")!;
@@ -51,7 +51,7 @@ async function start() {
   ) as HTMLButtonElement;
 
   function updateStatus() {
-    const status = jungle.status();
+    const status = game.status();
     switch (status) {
       case GameStatus.Playing:
         statusElement.textContent = "Playing - Use arrow keys to move";
@@ -90,8 +90,8 @@ async function start() {
     disableButton();
     playButton.textContent = "Starting...";
 
-    jungle.reset_game();
-    jungle.start_game();
+    game.reset();
+    game.start();
     gameRunning = true;
 
     if (animationId) {
@@ -109,22 +109,22 @@ async function start() {
 
     switch (event.code) {
       case "ArrowUp": {
-        jungle.change_snake_direction(Direction.Up);
+        game.change_snake_direction(Direction.Up);
         event.preventDefault();
         break;
       }
       case "ArrowRight": {
-        jungle.change_snake_direction(Direction.Right);
+        game.change_snake_direction(Direction.Right);
         event.preventDefault();
         break;
       }
       case "ArrowDown": {
-        jungle.change_snake_direction(Direction.Down);
+        game.change_snake_direction(Direction.Down);
         event.preventDefault();
         break;
       }
       case "ArrowLeft": {
-        jungle.change_snake_direction(Direction.Left);
+        game.change_snake_direction(Direction.Left);
         event.preventDefault();
         break;
       }
@@ -139,8 +139,8 @@ async function start() {
 
       ctx.fillStyle = "#1a1a1a";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      jungle.step();
-      paint(wasm, ctx, jungle);
+      game.step();
+      paint(wasm, ctx, game);
       updateStatus();
 
       if (gameRunning) {
@@ -152,23 +152,24 @@ async function start() {
   // Initial render
   ctx.fillStyle = "#1a1a1a";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  paint(wasm, ctx, jungle);
+  paint(wasm, ctx, game);
   updateStatus();
 }
 
-function drawJungle(ctx: CanvasRenderingContext2D) {
+function drawJungle(ctx: CanvasRenderingContext2D, game: Game) {
+  const jungleWidth = game.jungle_width();
   ctx.beginPath();
   ctx.strokeStyle = "#333";
   ctx.lineWidth = 1;
 
-  for (let x = 0; x <= JUNGLE_WIDTH; x++) {
+  for (let x = 0; x <= jungleWidth; x++) {
     ctx.moveTo(x * CELL_SIZE, 0);
-    ctx.lineTo(x * CELL_SIZE, JUNGLE_WIDTH * CELL_SIZE);
+    ctx.lineTo(x * CELL_SIZE, jungleWidth * CELL_SIZE);
   }
 
-  for (let y = 0; y <= JUNGLE_WIDTH; y++) {
+  for (let y = 0; y <= jungleWidth; y++) {
     ctx.moveTo(0, y * CELL_SIZE);
-    ctx.lineTo(JUNGLE_WIDTH * CELL_SIZE, y * CELL_SIZE);
+    ctx.lineTo(jungleWidth * CELL_SIZE, y * CELL_SIZE);
   }
 
   ctx.stroke();
@@ -177,17 +178,18 @@ function drawJungle(ctx: CanvasRenderingContext2D) {
 function drawSnake(
   wasm: InitOutput,
   ctx: CanvasRenderingContext2D,
-  jungle: Jungle,
+  game: Game,
 ) {
   const snakeCells = new Uint32Array(
     wasm.memory.buffer,
-    jungle.snake_cells_ptr(),
-    jungle.snake_length(),
+    game.snake_cells_ptr(),
+    game.snake_length(),
   );
 
   snakeCells.forEach((cellIdx, i) => {
-    const col = cellIdx % JUNGLE_WIDTH;
-    const row = Math.floor(cellIdx / JUNGLE_WIDTH);
+    const jungleWidth = game.jungle_width();
+    const col = cellIdx % jungleWidth;
+    const row = Math.floor(cellIdx / jungleWidth);
 
     ctx.fillStyle = i === 0 ? "#4fc3f7" : "#81c784";
     ctx.fillRect(
@@ -199,10 +201,11 @@ function drawSnake(
   });
 }
 
-function drawFood(ctx: CanvasRenderingContext2D, jungle: Jungle) {
-  const foodCellIdx = jungle.food_cell();
-  const col = foodCellIdx % JUNGLE_WIDTH;
-  const row = Math.floor(foodCellIdx / JUNGLE_WIDTH);
+function drawFood(ctx: CanvasRenderingContext2D, game: Game) {
+  const foodCellIdx = game.food_cell();
+  const width = game.jungle_width();
+  const col = foodCellIdx % width;
+  const row = Math.floor(foodCellIdx / width);
 
   ctx.fillStyle = "#ff5722";
   ctx.fillRect(
@@ -213,14 +216,10 @@ function drawFood(ctx: CanvasRenderingContext2D, jungle: Jungle) {
   );
 }
 
-function paint(
-  wasm: InitOutput,
-  ctx: CanvasRenderingContext2D,
-  jungle: Jungle,
-) {
-  drawJungle(ctx);
-  drawSnake(wasm, ctx, jungle);
-  drawFood(ctx, jungle);
+function paint(wasm: InitOutput, ctx: CanvasRenderingContext2D, game: Game) {
+  drawJungle(ctx, game);
+  drawSnake(wasm, ctx, game);
+  drawFood(ctx, game);
 }
 
 start().catch(console.error);
