@@ -8,6 +8,7 @@ A classic Snake game implementation built with Rust and WebAssembly, featuring a
 - **Points system** - earn points by eating food
 - **Real-time score display**
 - **Responsive controls** using arrow keys
+- **Adjustable speed controls** - 5 speed levels (1x to 5x)
 - **Game states** - Playing, Won, Lost
 - **20x20 game board** for extended gameplay
 - **Clean, modern UI** with CSS styling
@@ -59,17 +60,20 @@ snake_game_with_rust_wasm/
 ### Installation
 
 1. **Clone the repository**:
+
    ```bash
-   git clone <repository-url>
-   cd snake_game_with_rust_wasm
+   git clone https://github.com/t-ho/snake-game-with-rust-wasm.git
+   cd snake-game-with-rust-wasm
    ```
 
 2. **Install wasm-pack** (if not already installed):
+
    ```bash
    cargo install wasm-pack
    ```
 
 3. **Install frontend dependencies**:
+
    ```bash
    cd www
    yarn install
@@ -78,22 +82,27 @@ snake_game_with_rust_wasm/
 ### Development
 
 1. **Start the development server**:
+
    ```bash
    cd www
    yarn dev
    ```
+
    This will:
+
    - Build the Rust code to WebAssembly
    - Start the Vite development server
    - Open the game in your browser (usually at `http://localhost:5173`)
 
 2. **Build for production**:
+
    ```bash
    cd www
    yarn build
    ```
 
 3. **Preview production build**:
+
    ```bash
    cd www
    yarn preview
@@ -116,10 +125,11 @@ From the `www/` directory:
    - ↓ Down Arrow - Move down
    - ← Left Arrow - Move left
    - → Right Arrow - Move right
-3. **Eat the red food** to grow the snake and earn points
-4. **Avoid hitting yourself** - the game ends if the snake collides with its body
-5. **Win condition** - Fill the entire board with the snake
-6. **Restart** - Click "Play Again" after game over
+3. **Adjust game speed** using the « and » buttons (1x to 5x speed)
+4. **Eat the red food** to grow the snake and earn points
+5. **Avoid hitting yourself** - the game ends if the snake collides with its body
+6. **Win condition** - Fill the entire board with the snake
+7. **Restart** - Click "Play Again" after game over
 
 ## 🏗️ Architecture
 
@@ -148,11 +158,13 @@ From the `www/` directory:
 ## 🔧 Configuration
 
 ### Rust Configuration (Cargo.toml)
+
 - **Edition**: 2024 (latest Rust edition)
 - **Crate type**: `cdylib` for WebAssembly compilation
 - **Dependencies**: `wasm-bindgen` for JS/WASM interop
 
 ### TypeScript Configuration (tsconfig.json)
+
 - **Target**: ES2022 for modern JavaScript features
 - **Module**: ESNext with bundler resolution
 - **Strict typing**: Enabled for better code quality

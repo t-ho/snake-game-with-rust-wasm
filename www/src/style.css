@@ -46,6 +46,51 @@ body {
   min-height: 24px;
 }
 
+#game-points {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #666;
+}
+
+.speed-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+#speed-display {
+  font-size: 16px;
+  color: #666;
+  min-width: 80px;
+}
+
+#speed-up,
+#speed-down {
+  background: #2196f3;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  min-width: 40px;
+}
+
+#speed-up:hover:not(:disabled),
+#speed-down:hover:not(:disabled) {
+  background: #1976d2;
+}
+
+#speed-up:disabled,
+#speed-down:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
 #play-button {
   background: #4caf50;
   color: white;

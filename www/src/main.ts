@@ -14,6 +14,11 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
     <div class="game-controls">
       <div id="game-status">Press Play to Start</div>
       <div id="game-points">Points: 0</div>
+      <div class="speed-controls">
+        <button id="speed-down">«</button>
+        <span id="speed-display">Speed: 1x</span>
+        <button id="speed-up">»</button>
+      </div>
       <button id="play-button">Play</button>
     </div>
 
@@ -32,6 +37,10 @@ const JUNGLE_WIDTH = 20;
 
 let gameRunning = false;
 let animationId: number;
+let gameSpeed = 1; // Speed multiplier (1x, 2x, 3x, etc.)
+const BASE_FPS = 4;
+const MIN_SPEED = 1;
+const MAX_SPEED = 5;
 
 async function start() {
   const wasm = await init();
@@ -53,10 +62,26 @@ async function start() {
   const playButton = document.getElementById(
     "play-button",
   ) as HTMLButtonElement;
+  const speedUpButton = document.getElementById(
+    "speed-up",
+  ) as HTMLButtonElement;
+  const speedDownButton = document.getElementById(
+    "speed-down",
+  ) as HTMLButtonElement;
+  const speedDisplay = document.getElementById(
+    "speed-display",
+  ) as HTMLSpanElement;
+
+  function updateSpeedDisplay() {
+    speedDisplay.textContent = `Speed: ${gameSpeed}x`;
+    speedDownButton.disabled = gameSpeed <= MIN_SPEED;
+    speedUpButton.disabled = gameSpeed >= MAX_SPEED;
+  }
 
   function updateStatus() {
     const status = game.status();
     pointsElement.textContent = `Points: ${game.points()}`;
+    updateSpeedDisplay();
 
     switch (status) {
       case GameStatus.Playing:
@@ -110,6 +135,20 @@ async function start() {
 
   playButton.addEventListener("click", startGame);
 
+  speedUpButton.addEventListener("click", () => {
+    if (gameSpeed < MAX_SPEED) {
+      gameSpeed++;
+      updateSpeedDisplay();
+    }
+  });
+
+  speedDownButton.addEventListener("click", () => {
+    if (gameSpeed > MIN_SPEED) {
+      gameSpeed--;
+      updateSpeedDisplay();
+    }
+  });
+
   document.addEventListener("keydown", (event) => {
     if (!gameRunning) return;
 
@@ -139,7 +178,7 @@ async function start() {
   });
 
   function update() {
-    const fps = 5;
+    const fps = BASE_FPS * gameSpeed;
     setTimeout(() => {
       if (!gameRunning) return;
 
