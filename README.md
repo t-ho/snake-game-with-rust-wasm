@@ -2,6 +2,10 @@
 
 A modern Snake game implementation showcasing the power of **Rust + WebAssembly + TypeScript**. Features high-performance game logic in Rust compiled to WebAssembly, with a sleek TypeScript frontend using Vite and modern web technologies.
 
+## 📸 Screenshot
+
+![Snake Game Screenshot](www/public/screenshot.png)
+
 ## 🎮 Features
 
 - **Classic Snake gameplay** with wraparound borders
