@@ -2,84 +2,86 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
 body {
   margin: 0;
   display: flex;
-  place-items: center;
+  justify-content: center;
+  align-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+#app {
+  font-family: Arial, sans-serif;
 }
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+.game-container {
+  display: inline-block;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vanilla:hover {
-  filter: drop-shadow(0 0 2em #3178c6aa);
+.game-title {
+  color: #333;
+  margin: 0 0 15px 0;
+  font-size: 2em;
 }
 
-.card {
-  padding: 2em;
+.game-controls {
+  margin-bottom: 15px;
 }
 
-.read-the-docs {
-  color: #888;
+#game-status {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #666;
+  min-height: 24px;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+#play-button {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: border-color 0.25s;
+  margin-bottom: 15px;
+  transition: background-color 0.2s;
 }
-button:hover {
-  border-color: #646cff;
+
+#play-button:hover:not(:disabled) {
+  background: #45a049;
 }
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+
+#play-button:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+.game-canvas-container {
+  display: inline-block;
+  border: 2px solid #333;
+  background: #1a1a1a;
+  line-height: 0;
+}
+
+#jungle-canvas {
+  display: block;
+}
+
+.game-instructions {
+  margin: 10px 0 0 0;
+  color: #666;
+  font-size: 14px;
 }
 
 @media (prefers-color-scheme: light) {
@@ -87,10 +89,16 @@ button:focus-visible {
     color: #213547;
     background-color: #ffffff;
   }
-  a:hover {
-    color: #747bff;
+
+  .game-title {
+    color: #333;
   }
-  button {
-    background-color: #f9f9f9;
+
+  #game-status {
+    color: #666;
+  }
+
+  .game-instructions {
+    color: #666;
   }
 }
