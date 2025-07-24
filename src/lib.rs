@@ -36,6 +36,7 @@ pub struct Jungle {
     width: usize,
     size: usize,
     snake: Snake,
+    next_cell: Option<SnakeCell>,
 }
 
 #[wasm_bindgen]
@@ -45,6 +46,7 @@ impl Jungle {
             width,
             size: width * width,
             snake: Snake::new(snake_idx, 3),
+            next_cell: None,
         }
     }
 
@@ -73,8 +75,15 @@ impl Jungle {
 
     pub fn step(&mut self) {
         let temp = self.snake.body.clone();
-        let next_cell = self.gen_next_snake_cell();
-        self.snake.body[0] = next_cell;
+
+        match self.next_cell.take() {
+            Some(cell) => {
+                self.snake.body[0] = cell;
+            }
+            None => {
+                self.snake.body[0] = self.gen_next_snake_cell(&self.snake.direction);
+            }
+        }
 
         let len = self.snake.body.len();
 
@@ -83,11 +92,11 @@ impl Jungle {
         }
     }
 
-    fn gen_next_snake_cell(&self) -> SnakeCell {
+    fn gen_next_snake_cell(&self, direction: &Direction) -> SnakeCell {
         let snake_head = self.snake_head_idx();
         let row = snake_head / self.width;
 
-        match self.snake.direction {
+        match direction {
             Direction::Up => {
                 let threshold = snake_head - row * self.width;
                 if snake_head == threshold {
@@ -125,6 +134,13 @@ impl Jungle {
     }
 
     pub fn change_snake_direction(&mut self, direction: Direction) {
+        let next_cell = self.gen_next_snake_cell(&direction);
+
+        if self.snake.body[1].0 == next_cell.0 {
+            return;
+        }
+
+        self.next_cell = Some(next_cell);
         self.snake.direction = direction;
     }
 }
