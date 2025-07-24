@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "wasm": "cd ../ && wasm-pack build --target web --out-dir ./www/pkg",
+    "wasm:release": "cd ../ && wasm-pack build --target web --out-dir ./www/pkg --release",
     "dev": "yarn wasm && vite",
-    "build": "yarn wasm && tsc && vite build",
+    "build": "yarn wasm:release && tsc && vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
