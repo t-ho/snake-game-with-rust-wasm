@@ -1,5 +1,10 @@
 use wasm_bindgen::prelude::*;
 
+#[wasm_bindgen(module = "/www/src/utils/rnd.ts")]
+extern "C" {
+    fn rnd(max: usize) -> usize;
+}
+
 #[wasm_bindgen]
 pub enum Direction {
     Up,
@@ -8,7 +13,7 @@ pub enum Direction {
     Right,
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct SnakeCell(usize);
 
 struct Snake {
@@ -37,21 +42,38 @@ pub struct Jungle {
     size: usize,
     snake: Snake,
     next_cell: Option<SnakeCell>,
+    food_cell: usize,
 }
 
 #[wasm_bindgen]
 impl Jungle {
     pub fn new(width: usize, snake_idx: usize) -> Self {
+        let snake = Snake::new(snake_idx, 3);
+        let size = width * width;
+        let mut food_cell;
+
+        loop {
+            food_cell = rnd(size);
+            if !snake.body.contains(&SnakeCell(food_cell)) {
+                break;
+            }
+        }
+
         Self {
             width,
-            size: width * width,
-            snake: Snake::new(snake_idx, 3),
+            size,
+            snake,
             next_cell: None,
+            food_cell,
         }
     }
 
     pub fn width(&self) -> usize {
         self.width
+    }
+
+    pub fn food_cell(&self) -> usize {
+        self.food_cell
     }
 
     pub fn snake_head_idx(&self) -> usize {

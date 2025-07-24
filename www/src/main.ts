@@ -1,6 +1,7 @@
 import "./style.css";
 import init, { Jungle, Direction } from "../pkg/snake_game_with_rust_wasm";
 import type { InitOutput } from "../pkg/snake_game_with_rust_wasm";
+import { rnd } from "./utils/rnd";
 
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <div>
@@ -12,7 +13,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 const CELL_SIZE = 20;
 const JUNGLE_WIDTH = 8;
 
-const snakeSpawnIdx = Date.now() % (JUNGLE_WIDTH * JUNGLE_WIDTH);
+const snakeSpawnIdx = rnd(JUNGLE_WIDTH * JUNGLE_WIDTH);
 
 async function start() {
   const wasm = await init();
@@ -104,6 +105,18 @@ function drawSnake(
   ctx.stroke();
 }
 
+function drawFood(ctx: CanvasRenderingContext2D, jungle: Jungle) {
+  const foodCellIdx = jungle.food_cell();
+  const jungleWidth = jungle.width();
+  const col = foodCellIdx % jungleWidth;
+  const row = Math.floor(foodCellIdx / jungleWidth);
+
+  ctx.beginPath();
+  ctx.fillStyle = "#ff0000";
+  ctx.fillRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+  ctx.stroke();
+}
+
 function paint(
   wasm: InitOutput,
   ctx: CanvasRenderingContext2D,
@@ -111,6 +124,7 @@ function paint(
 ) {
   drawJungle(ctx, jungle);
   drawSnake(wasm, ctx, jungle);
+  drawFood(ctx, jungle);
 }
 
 start().catch(console.error);
