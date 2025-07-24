@@ -25,7 +25,9 @@ export class GameController {
   }
 
   private setupEventListeners(): void {
-    this.elements.playButton.addEventListener("click", () => this.startGame());
+    this.elements.playButton.addEventListener("click", () =>
+      this.handlePlayButtonClick(),
+    );
 
     this.elements.speedUpButton.addEventListener("click", () => {
       if (this.gameSpeed < GAME_CONFIG.MAX_SPEED) {
@@ -45,7 +47,15 @@ export class GameController {
   }
 
   private handleKeyPress(event: KeyboardEvent): void {
-    if (!this.gameRunning) return;
+    // Handle pause/resume with spacebar during gameplay
+    if (event.code === "Space" && this.gameRunning) {
+      this.togglePause();
+      event.preventDefault();
+      return;
+    }
+
+    // Only handle movement when game is running and not paused
+    if (!this.gameRunning || this.game.status() === GameStatus.Paused) return;
 
     switch (event.code) {
       case "ArrowUp":
@@ -67,6 +77,40 @@ export class GameController {
     }
   }
 
+  private handlePlayButtonClick(): void {
+    const status = this.game.status();
+
+    if (status === GameStatus.Paused) {
+      this.resumeGame();
+    } else if (status === GameStatus.Playing) {
+      this.pauseGame();
+    } else {
+      this.startGame();
+    }
+  }
+
+  private togglePause(): void {
+    const status = this.game.status();
+
+    if (status === GameStatus.Playing) {
+      this.pauseGame();
+    } else if (status === GameStatus.Paused) {
+      this.resumeGame();
+    }
+  }
+
+  private pauseGame(): void {
+    this.game.pause();
+    this.updateUI();
+  }
+
+  private resumeGame(): void {
+    this.game.resume();
+    this.updateUI();
+    // Restart the game loop when resuming
+    this.gameLoop();
+  }
+
   private startGame(): void {
     this.setButtonDisabled(true);
     this.elements.playButton.innerHTML = `${ICONS.loading} Starting...`;
@@ -84,6 +128,13 @@ export class GameController {
   }
 
   private gameLoop(): void {
+    const status = this.game.status();
+
+    // If paused, stop the game loop entirely
+    if (status === GameStatus.Paused) {
+      return;
+    }
+
     const fps = GAME_CONFIG.BASE_FPS * this.gameSpeed;
 
     setTimeout(() => {
@@ -111,8 +162,13 @@ export class GameController {
     switch (status) {
       case GameStatus.Playing:
         this.elements.statusElement.textContent = "Playing";
-        this.elements.playButton.innerHTML = `${ICONS.pause} Playing...`;
-        this.setButtonDisabled(true);
+        this.elements.playButton.innerHTML = `${ICONS.pause} Pause`;
+        this.setButtonDisabled(false);
+        break;
+      case GameStatus.Paused:
+        this.elements.statusElement.textContent = "Paused";
+        this.elements.playButton.innerHTML = `${ICONS.play} Resume`;
+        this.setButtonDisabled(false);
         break;
       case GameStatus.Won:
         this.elements.statusElement.textContent = "You Won! 🎉";

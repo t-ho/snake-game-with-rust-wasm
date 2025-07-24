@@ -6,4 +6,6 @@ pub enum GameStatus {
     Won,
     Lost,
     Playing,
+    Paused,
 }
+

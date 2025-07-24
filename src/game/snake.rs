@@ -1,5 +1,5 @@
-use crate::direction::Direction;
 use super::status::GameStatus;
+use crate::direction::Direction;
 
 #[derive(Clone, Copy, PartialEq)]
 pub struct SnakeCell(pub usize);
@@ -35,6 +35,10 @@ impl Snake {
 
     pub fn length(&self) -> usize {
         self.body.len()
+    }
+
+    pub fn direction(&self) -> Direction {
+        self.direction
     }
 
     pub fn move_snake(&mut self, jungle_width: usize, jungle_size: usize) -> Option<GameStatus> {
@@ -77,7 +81,12 @@ impl Snake {
         }
     }
 
-    pub fn change_direction(&mut self, direction: Direction, jungle_width: usize, jungle_size: usize) {
+    pub fn change_direction(
+        &mut self,
+        direction: Direction,
+        jungle_width: usize,
+        jungle_size: usize,
+    ) {
         let next_cell = self.gen_next_cell(&direction, jungle_width, jungle_size);
 
         if self.body[1].0 == next_cell.0 {

@@ -60,6 +60,10 @@ impl Game {
         self.snake.length()
     }
 
+    pub fn snake_direction(&self) -> Direction {
+        self.snake.direction()
+    }
+
     pub fn step(&mut self) {
         match self.status {
             Some(GameStatus::Playing) => {
@@ -86,6 +90,9 @@ impl Game {
                     self.jungle.generate_food(&self.snake.body);
                 }
             }
+            Some(GameStatus::Paused) => {
+                // Do nothing when paused - maintain current state
+            }
             _ => {
                 self.status = None;
             }
@@ -94,6 +101,18 @@ impl Game {
 
     pub fn start(&mut self) {
         if self.status.is_none() {
+            self.status = Some(GameStatus::Playing);
+        }
+    }
+
+    pub fn pause(&mut self) {
+        if matches!(self.status, Some(GameStatus::Playing)) {
+            self.status = Some(GameStatus::Paused);
+        }
+    }
+
+    pub fn resume(&mut self) {
+        if matches!(self.status, Some(GameStatus::Paused)) {
             self.status = Some(GameStatus::Playing);
         }
     }
@@ -111,4 +130,3 @@ impl Game {
             .change_direction(direction, self.jungle.width, self.jungle.size);
     }
 }
-

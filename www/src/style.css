@@ -294,6 +294,11 @@ body {
   gap: 0.75rem;
   font-size: 0.875rem;
   color: hsl(var(--muted-foreground));
+  margin-bottom: 0.5rem;
+}
+
+.instruction-item:last-child {
+  margin-bottom: 0;
 }
 
 kbd {
@@ -356,4 +361,3 @@ kbd {
     grid-template-columns: 1fr;
   }
 }
-
