@@ -13,7 +13,7 @@ pub enum Direction {
     Right,
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 pub struct SnakeCell(usize);
 
 struct Snake {
@@ -105,7 +105,6 @@ impl Jungle {
     pub fn step(&mut self) {
         match self.status {
             Some(GameStatus::Playing) => {
-                let temp = self.snake.body.clone();
                 let new_head_cell = match self.next_cell.take() {
                     Some(cell) => cell,
                     None => self.gen_next_snake_cell(&self.snake.direction),
@@ -118,17 +117,20 @@ impl Jungle {
                     return;
                 }
 
-                // Move snake
-                self.snake.body[0] = new_head_cell;
                 let len = self.snake.body.len();
+                let old_tail = self.snake.body[len - 1];
 
-                for i in 1..len {
-                    self.snake.body[i] = SnakeCell(temp[i - 1].0);
+                // Move snake body in reverse order (tail to head)
+                for i in (1..len).rev() {
+                    self.snake.body[i] = self.snake.body[i - 1];
                 }
 
+                // Set new head
+                self.snake.body[0] = new_head_cell;
+
                 // Check if food eaten
-                if self.food_cell == self.snake_head_idx() {
-                    self.snake.body.push(SnakeCell(temp[len - 1].0));
+                if self.food_cell == new_head_cell.0 {
+                    self.snake.body.push(old_tail);
 
                     // Check win condition (snake fills entire board)
                     if self.snake.body.len() == self.size {
