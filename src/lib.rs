@@ -50,14 +50,7 @@ impl Jungle {
     pub fn new(width: usize, snake_idx: usize) -> Self {
         let snake = Snake::new(snake_idx, 3);
         let size = width * width;
-        let mut food_cell;
-
-        loop {
-            food_cell = rnd(size);
-            if !snake.body.contains(&SnakeCell(food_cell)) {
-                break;
-            }
-        }
+        let food_cell = Self::gen_food_cell(size, &snake.body);
 
         Self {
             width,
@@ -112,6 +105,23 @@ impl Jungle {
         for i in 1..len {
             self.snake.body[i] = SnakeCell(temp[i - 1].0);
         }
+
+        if self.food_cell == self.snake_head_idx() {
+            self.snake.body.push(SnakeCell(temp[len - 1].0));
+            self.food_cell = Self::gen_food_cell(self.size, &self.snake.body);
+        }
+    }
+
+    fn gen_food_cell(max: usize, snake_body: &[SnakeCell]) -> usize {
+        let mut food_cell;
+
+        loop {
+            food_cell = rnd(max);
+            if !snake_body.contains(&SnakeCell(food_cell)) {
+                break;
+            }
+        }
+        food_cell
     }
 
     fn gen_next_snake_cell(&self, direction: &Direction) -> SnakeCell {
