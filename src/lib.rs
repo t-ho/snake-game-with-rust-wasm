@@ -37,12 +37,21 @@ impl Snake {
 }
 
 #[wasm_bindgen]
+#[derive(Copy, Clone)]
+pub enum GameStatus {
+    Won,
+    Lost,
+    Playing,
+}
+
+#[wasm_bindgen]
 pub struct Jungle {
     width: usize,
     size: usize,
     snake: Snake,
     next_cell: Option<SnakeCell>,
     food_cell: usize,
+    status: Option<GameStatus>,
 }
 
 #[wasm_bindgen]
@@ -58,6 +67,7 @@ impl Jungle {
             snake,
             next_cell: None,
             food_cell,
+            status: None,
         }
     }
 
@@ -67,6 +77,10 @@ impl Jungle {
 
     pub fn food_cell(&self) -> usize {
         self.food_cell
+    }
+
+    pub fn status(&self) -> Option<GameStatus> {
+        self.status
     }
 
     pub fn snake_head_idx(&self) -> usize {
@@ -89,27 +103,60 @@ impl Jungle {
     }
 
     pub fn step(&mut self) {
-        let temp = self.snake.body.clone();
+        match self.status {
+            Some(GameStatus::Playing) => {
+                let temp = self.snake.body.clone();
+                let new_head_cell = match self.next_cell.take() {
+                    Some(cell) => cell,
+                    None => self.gen_next_snake_cell(&self.snake.direction),
+                };
 
-        match self.next_cell.take() {
-            Some(cell) => {
-                self.snake.body[0] = cell;
+                // Check if new head position collides with body (excluding tail which will move)
+                let body_without_tail = &self.snake.body[..self.snake.body.len() - 1];
+                if body_without_tail.contains(&new_head_cell) {
+                    self.status = Some(GameStatus::Lost);
+                    return;
+                }
+
+                // Move snake
+                self.snake.body[0] = new_head_cell;
+                let len = self.snake.body.len();
+
+                for i in 1..len {
+                    self.snake.body[i] = SnakeCell(temp[i - 1].0);
+                }
+
+                // Check if food eaten
+                if self.food_cell == self.snake_head_idx() {
+                    self.snake.body.push(SnakeCell(temp[len - 1].0));
+
+                    // Check win condition (snake fills entire board)
+                    if self.snake.body.len() == self.size {
+                        self.status = Some(GameStatus::Won);
+                        return;
+                    }
+
+                    self.food_cell = Self::gen_food_cell(self.size, &self.snake.body);
+                }
             }
-            None => {
-                self.snake.body[0] = self.gen_next_snake_cell(&self.snake.direction);
+            _ => {
+                self.status = None;
             }
         }
+    }
 
-        let len = self.snake.body.len();
-
-        for i in 1..len {
-            self.snake.body[i] = SnakeCell(temp[i - 1].0);
+    pub fn start_game(&mut self) {
+        if self.status.is_none() {
+            self.status = Some(GameStatus::Playing);
         }
+    }
 
-        if self.food_cell == self.snake_head_idx() {
-            self.snake.body.push(SnakeCell(temp[len - 1].0));
-            self.food_cell = Self::gen_food_cell(self.size, &self.snake.body);
-        }
+    pub fn reset_game(&mut self) {
+        let snake_spawn_idx = rnd(self.size);
+        self.snake = Snake::new(snake_spawn_idx, 3);
+        self.next_cell = None;
+        self.food_cell = Self::gen_food_cell(self.size, &self.snake.body);
+        self.status = None;
     }
 
     fn gen_food_cell(max: usize, snake_body: &[SnakeCell]) -> usize {
