@@ -1,51 +1,79 @@
-# Snake Game with Rust and WebAssembly
+# Snake Game with Rust + WebAssembly + TypeScript
 
-A classic Snake game implementation built with Rust and WebAssembly, featuring a modern TypeScript frontend using Vite. The game demonstrates the power of combining Rust's performance with WebAssembly's portability for web-based games.
+A modern Snake game implementation showcasing the power of **Rust + WebAssembly + TypeScript**. Features high-performance game logic in Rust compiled to WebAssembly, with a sleek TypeScript frontend using Vite and modern web technologies.
 
 ## 🎮 Features
 
 - **Classic Snake gameplay** with wraparound borders
+- **Cartoon-style snake** with eyes and tongue animation
 - **Points system** - earn points by eating food
 - **Real-time score display**
 - **Responsive controls** using arrow keys
 - **Adjustable speed controls** - 5 speed levels (1x to 5x)
 - **Game states** - Playing, Won, Lost
 - **20x20 game board** for extended gameplay
-- **Clean, modern UI** with CSS styling
+- **Shadcn/ui inspired design** with modern card-based layout
+- **Dark/light mode support** with CSS custom properties
 
 ## 🛠️ Technology Stack
 
-- **Backend**: Rust with WebAssembly (wasm-bindgen)
-- **Frontend**: TypeScript + Vite
-- **Build Tools**: wasm-pack, Vite, TypeScript compiler
-- **Package Management**: Cargo (Rust), Yarn (Node.js)
+### Core Technologies
+
+- **Rust** - High-performance game logic and algorithms
+- **WebAssembly** - Seamless integration between Rust and JavaScript
+- **TypeScript** - Type-safe frontend development with modern ES features
+
+### Build & Development
+
+- **wasm-pack** - Rust to WebAssembly compilation
+- **Vite** - Fast development server and build tool
+- **Inter Font** - Modern typography with advanced OpenType features
+
+### Architecture
+
+- **Modular design** - Clean separation of concerns across multiple modules
+- **CSS Custom Properties** - Modern styling with CSS variables
+- **SVG Icons** - Scalable vector graphics for UI elements
 
 ## 📁 Project Structure
 
 ```
-snake_game_with_rust_wasm/
-├── Cargo.toml                 # Rust package configuration
-├── Cargo.lock                 # Rust dependency lock file
-├── src/                       # Rust source code
-│   ├── lib.rs                 # Main library entry point
-│   ├── direction.rs           # Direction enum for snake movement
-│   ├── game.rs                # Main game logic and WASM interface
-│   ├── rnd.rs                 # Random number generation utilities
-│   └── game/                  # Game modules
-│       ├── jungle.rs          # Game board and food management
-│       ├── snake.rs           # Snake entity logic
-│       └── status.rs          # Game status enum
-└── www/                       # Frontend web application
-    ├── package.json           # Node.js package configuration
-    ├── tsconfig.json          # TypeScript configuration
-    ├── index.html             # Main HTML entry point
-    ├── src/
-    │   ├── main.ts            # Main TypeScript application
-    │   ├── style.css          # CSS styles
-    │   └── utils/
-    │       └── rnd.ts         # Random utilities for frontend
-    ├── dist/                  # Built frontend assets
-    └── pkg/                   # Generated WASM bindings
+snake-game-with-rust-wasm/
+├── 🦀 Rust + WebAssembly Backend
+│   ├── Cargo.toml             # Rust package configuration
+│   ├── Cargo.lock             # Dependency lock file
+│   └── src/                   # Rust source code
+│       ├── lib.rs             # Main library entry point
+│       ├── direction.rs       # Movement direction enum
+│       ├── game.rs            # Game coordinator & WASM interface
+│       ├── rnd.rs             # Random number utilities
+│       └── game/              # Core game modules
+│           ├── jungle.rs      # Game board & food management
+│           ├── snake.rs       # Snake entity & movement logic
+│           └── status.rs      # Game state enum
+│
+└── 🎨 TypeScript Frontend
+    └── www/
+        ├── package.json       # Node.js dependencies
+        ├── tsconfig.json      # TypeScript configuration
+        ├── index.html         # HTML entry point
+        ├── src/
+        │   ├── main.ts        # Application bootstrapper
+        │   ├── style.css      # Shadcn/ui inspired styles
+        │   ├── config/
+        │   │   └── constants.ts    # Game configuration & colors
+        │   ├── ui/
+        │   │   ├── template.ts     # HTML template generator
+        │   │   ├── elements.ts     # DOM element helpers
+        │   │   └── icons.ts        # SVG icon components
+        │   ├── game/
+        │   │   └── controller.ts   # Game state management
+        │   ├── renderer/
+        │   │   └── canvas.ts       # Canvas rendering engine
+        │   └── utils/
+        │       └── rnd.ts          # Frontend random utilities
+        ├── dist/              # Production build output
+        └── pkg/               # Generated WASM bindings
 ```
 
 ## 🚀 Getting Started
@@ -131,29 +159,37 @@ From the `www/` directory:
 6. **Win condition** - Fill the entire board with the snake
 7. **Restart** - Click "Play Again" after game over
 
-## 🏗️ Architecture
+## 🏗️ Architecture Overview
 
-### Rust/WebAssembly Layer
+### 🦀 Rust + WebAssembly Backend
 
-- **Game struct**: Main game coordinator exposed to JavaScript
-- **Snake module**: Handles snake movement, growth, and collision detection
-- **Jungle module**: Manages the game board and food generation
-- **Direction enum**: Represents movement directions
-- **GameStatus enum**: Tracks game states (Playing, Won, Lost)
+```rust
+// High-performance game logic compiled to WebAssembly
+Game::new() -> Game           // Game coordinator exposed to JS
+├── Snake                     // Entity with movement & collision logic
+├── Jungle                    // Board management & food generation
+├── Direction                 // Movement enums (Up, Down, Left, Right)
+└── GameStatus               // State tracking (Playing, Won, Lost)
+```
 
-### TypeScript Frontend
+### 🎨 Modern TypeScript Frontend
 
-- **Main application**: Handles UI, canvas rendering, and game loop
-- **WASM integration**: Imports and uses the Rust-generated WebAssembly module
-- **Canvas rendering**: Draws the game board, snake, and food
-- **Event handling**: Processes keyboard input and game controls
+```typescript
+// Modular, type-safe frontend architecture
+SnakeGameApp                 // Application bootstrapper
+├── GameController           // State management & event handling
+├── GameRenderer            // Canvas drawing & animation engine
+├── UI Components           // Template, elements, icons
+└── Configuration           // Constants & color schemes
+```
 
-### Key Design Decisions
+### 🔧 Key Design Principles
 
-- **Modular architecture**: Rust code is organized into focused modules
-- **Memory efficiency**: Direct memory access for snake cells via pointers
-- **Performance optimization**: Eliminated expensive clone operations in movement logic
-- **Clean separation**: Game logic in Rust, rendering and UI in TypeScript
+- **Performance First**: Rust handles compute-intensive game logic
+- **Type Safety**: Full TypeScript coverage with strict mode enabled
+- **Modular Design**: Clean separation of concerns across layers
+- **Memory Efficiency**: Direct WASM memory access for snake cells
+- **Modern Web**: CSS custom properties, ES2022 features, Vite bundling
 
 ## 🔧 Configuration
 
