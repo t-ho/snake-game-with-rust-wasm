@@ -56,7 +56,7 @@ export const createGameTemplate = (): string => `
 
           <div class="game-instructions">
             <div class="instruction-item">
-              <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd>
+              <kbd class="arrow-key">↑</kbd><kbd class="arrow-key">↓</kbd><kbd class="arrow-key">←</kbd><kbd class="arrow-key">→</kbd>
               <span>Arrow keys to move</span>
             </div>
             <div class="instruction-item">

@@ -4,7 +4,7 @@ A modern Snake game implementation showcasing the power of **Rust + WebAssembly 
 
 ## 📸 Screenshot
 
-![Snake Game Screenshot](www/public/screenshot.png)
+![Snake Game Screenshot](www/public/snake-game-screenshot.png)
 
 ## 🎮 Features
 
